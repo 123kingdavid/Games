@@ -116,6 +116,48 @@ while True:
                     game_over = True
                 else:
                     player = 'O' if player == 'X' else 'X'
+                    while True:  # Main game loop
+                        draw_lines()
+                        board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
+                        player = 'X'
+                        game_over = False
+
+                        while True:  # Single round loop
+                            for event in pygame.event.get():
+                                if event.type == pygame.QUIT:
+                                    pygame.quit()
+                                    sys.exit()
+
+                                if event.type == pygame.MOUSEBUTTONDOWN and not game_over:
+                                    mouseX = event.pos[0]  # X coordinate
+                                    mouseY = event.pos[1]  # Y coordinate
+
+                                    clicked_row = mouseY // SQUARE_SIZE
+                                    clicked_col = mouseX // SQUARE_SIZE
+
+                                    if is_square_empty(clicked_row, clicked_col):
+                                        mark_square(clicked_row, clicked_col, player)
+                                        draw_figures()
+                                        winner = check_winner()
+                                        if winner:
+                                            print(f"Player {winner} wins!")
+                                            game_over = True
+                                        elif is_board_full():
+                                            print("It's a draw!")
+                                            game_over = True
+                                        else:
+                                            player = 'O' if player == 'X' else 'X'
+
+                                if game_over and event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                                    break  # Exit the round loop to restart
+
+                            pygame.display.update()
+
+                        # Ask if the players want to play again
+                        play_again = input("Do you want to play again? (yes/no): ").strip().lower()
+                        if play_again != "yes":
+                            print("Thanks for playing! Goodbye!")
+                            break
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
             board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
